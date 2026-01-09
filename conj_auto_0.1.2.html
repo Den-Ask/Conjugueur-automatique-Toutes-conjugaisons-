@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="unicode">
+		<link rel="stylesheet" href="co_au.css" id="oui">
+		<title>Conjugueur Automatique</title>
+	</head>
+	<body>
+		<div id="Texte"></div>
+		<input type="text" placeholder="verbe en vZ">
+		<button id="Mode-Sombre" onclick="couleur_changeur()"></button>
+		<button id="Objets" onclick="change_pps()"></button>
+		<button id="Éffacer">Éffacer</button>
+		<button id = "info" onclick="informations1()">ℹ</button>
+		<script src="conj_auto_2.1.js"></script>
+		<script src="themes.js"></script>
+		<script src="fonct_0.1.1.js"></script>
+		<script>
+			localStorage.setItem('log',
+				`
+					${localStorage.getItem('log')} <br><u>
+					${new Date().getDate()}
+					${new Date().getMonth()}
+					${new Date().getFullYear()}
+					${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}</u> :
+					Ouverture de <i>conju_auto_0.1.2.html</i>
+				`
+			);
+		</script>
+	</body>
+</html>

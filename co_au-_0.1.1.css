@@ -1,0 +1,91 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: black;
+    color: white;
+    cursor: default;
+}
+h1 {
+    text-align: center;
+    border: 3px solid grey;
+    background-color: #555;
+}
+div {
+    height: 70px;
+}
+h2 {
+    text-align: center;
+    border: 3px solid grey;
+    background-color: #555;
+}
+p {
+    text-align: center;
+    margin: 0;
+}
+
+input {
+    /* Centré en plain millieu */
+    align-items: center;
+    margin-top: 100px;
+    width: 50%;
+    border-color: red;
+    border-radius: 5px;
+    height: 60px;
+    font-size: 48px;
+    text-align: center;
+    background-color: black;
+    color: white;
+
+}
+#Conjuguer {
+    /* Centré sous <input> */
+    align-items: center;
+    margin-top: 10px;
+}
+#Mode-Sombre {
+    /* En bas à gauche */
+    background-color: grey;
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    width: 20px;
+    height: 20px;
+}
+#Texte {
+    /* Centré horisontalement */
+    align-items: center;
+}
+#Objets {
+    /* Fixé en bas à droite */
+    background-color: red;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 20px;
+    height: 20px;
+}
+#ObjetsA {
+    /* Fixé en bas à droite */
+    background-color: green;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 20px;
+    height: 20px;
+}
+#Éffacer {
+    /* Fixé en bas à droite */
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 70px;
+    height: 20px;
+}
+#info {
+    position : fixed;
+    top : 20px;
+    right : 20px;
+    width : 10px;
+}
