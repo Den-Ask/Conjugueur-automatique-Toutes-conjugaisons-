@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Conjugueur</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 2em;
+            background-color: #f4f4f4;
+        }
+        label, input, button {
+            display: block;
+            margin: 1em 0;
+        }
+        #resultat {
+            margin-top: 2em;
+            padding: 1em;
+            background: #fff;
+            border: 1px solid #ccc;
+        }
+        #info {
+            position : fixed;
+            top : 20px;
+            right : 20px;
+            width : 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Conjugueur de verbe</h1>
+
+	<label>Radical (verbe sans la terminaison):
+	    <input type="text" id="radical" list="radicaux" placeholder='ex : "viŋ" pour "hu viŋa"' >
+	</label>
+	<datalist id="radicaux">
+	</datalist>
+
+	<label>Conjugaison (temps, mode, sous-mode, forme):
+	    <input type="text" id="conjugaison" list="conjugaisons">
+	</label>
+	<datalist id="conjugaisons">
+	</datalist>
+
+	<label>Sujet (deux valeurs, séparées par une virgule) :
+	    <input type="text" id="sujet" list="sujets" placeholder="p/n 1à9 , s/p">
+	</label>
+	<datalist id="sujets">
+	</datalist>
+
+    <label>Objet (deux valeurs, séparées par une virgule) :
+        <input type="text" id="objet" list="objets" placeholder="p/n 1à9 , s/p">
+    </label>
+    <datalist id="objets">
+    </datalist>
+
+	<label>Dérivation :
+	    <input type="text" id="derivation" list="derivations">
+	</label>
+	<datalist id="derivations">
+	</datalist>
+
+    <button onclick="executer()">Conjuguer</button>
+
+    <div id="resultat"></div>
+
+    <button id = "info" onclick="informations2()">ℹ</button>
+
+    <script>
+        localStorage.setItem('log',
+        `
+            ${localStorage.getItem('log')} <br><u>
+            ${new Date().getDate()}
+            ${new Date().getMonth()}
+            ${new Date().getFullYear()}
+            ${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}</u> :
+            Ouverture de <i>conju_auto_0.2.3.html</i>
+        `
+    );
+
+    function informations2 () {
+        window.open('info2.html', '_blank')
+    }
+    const mots = [
+    {
+        "classe" : "verbale",
+        "enssemble" : "conjugaison",
+        "nom" : "Fut Par Nor Aff",
+        "attributs" : {
+            "composition" : [["pps", "rat1"], ["itc", "fut"], ["verbe", "1"]],
+            "irrégularités" : []
+        },
+        "identifiant" : null
+    },
+    {
+        "classe" : "verbale",
+        "enssemble" : "pps",
+        "nom" : "rat1",
+        "attributs" : {
+            "p" : {
+                "1" : {"s" : "ni", "p" : "ri"},
+                "2" : {"s" : "ɦu", "p" : "mu"},
+                "3" : {"s" : "ɦa", "p" : "wa"}
+            },
+            "n" : {
+                "3" : {"s" : "ɦa", "p" : "wa"},
+                "4" : {"s" : "ɦa", "p" : "wa"},
+                "5" : {"s" : "li", "p" : "ya"},
+                "6" : {"s" : "li", "p" : "ya"},
+                "7" : {"s" : "ɦi", "p" : "zi"},
+                "8" : {"s" : "ɦi", "p" : "zi"},
+                "9" : {"s" : "vu", "p" : "vu"}
+            }
+        },
+        "identifiant" : null
+    },
+    {
+        "classe" : "verbale",
+        "enssemble" : "itc",
+        "nom" : "fut",
+        "attributs" : {
+            "composition" : "co"
+        },
+        "identifiant" : null
+    },
+    {
+        "classe" : "verbale",
+        "enssemble" : "verbe",
+        "nom" : "hul",
+        "attributs" : [{
+            "actif" : {
+                "formes" : ["hula", "hule", "hulu", "hulawo"],
+                "irrégularités" : []
+            }
+        }],
+        "identifiant" : null
+    },
+    {
+        "classe" : "verbale",
+        "enssemble" : "conjonctions",
+        "nom" : "neyika",
+        "attributs" : {},
+        "identifiant" : null
+    },
+    {
+        "classe" : "nominale",
+        "enssemble" : "combinant",
+        "nom" : "xi",
+        "attributs" : {
+            "position" : ["avant", "déttaché"],
+            "radical" : {
+                "type" : ["lieu"],
+                "type-" : [],
+                "classe" : [],
+                "classe-" : []
+            }
+        },
+        "identifiant" : null
+    },
+    {
+        "classe" : "nominale",
+        "enssemble" : "nom",
+        "nom" : "Mawore",
+        "attributs" : {
+            "type" : ["propre", "lieu"],
+            "classe" : []
+        },
+        "identifiant" : null
+    },
+    {
+        "classe" : "verbale",
+        "enssemble" : "verbe",
+        "nom" : "himb",
+        "attributs" : [{
+            "actif" : {
+                "formes" : ["himba", "himbe", "himbi", "himbawo"],
+                "irrégularités" : []
+            },
+            "applicatif" : {
+                "formes" : ["himbiya", "himbiye", "himbiya", "himbiyawo"],
+                "irrégularités" : []
+            }
+        }],
+        "identifiant" : null
+    },
+    {
+        "classe" : "verbale",
+        "enssemble" : "verbe",
+        "nom" : "k",
+        "attributs" : [{
+            "actif" : {
+                "formes" : ["ka", "ke", "ka", "kawo"],
+                "irrégularités" : [{
+                    "nom" : "Pre Par Nor Aff",
+                    "formes" : [],
+                    "composition" : [["pps", "cat2"]]
+                }]
+            }
+        }],
+        "identifiant" : null
+    },
+    {
+        "classe" : "verbale",
+        "enssemble" : "conjugaison",
+        "nom" : "Pre Par Nor Aff",
+        "attributs" : {
+            "composition" : [["pps", "rat1"], ["itc", "pre"], ["verbe", "1"]],
+            "irrégularités" : []
+        },
+        "identifiant" : null
+    },
+    {
+        "classe" : "verbale",
+        "enssemble" : "itc",
+        "nom" : "pre",
+        "attributs" : {
+            "composition" : "si"
+        },
+        "identifiant" : null
+    },
+    {
+        "classe" : "verbale",
+        "enssemble" : "dérvation",
+        "nom" : "causatif",
+        "attributs" : {
+            "composition" : [["sa"], ["ʣa"]]
+        },
+        "identifiant" : null
+    },
+    {
+        "classe" : "équivalance",
+        "enssemble" : "conjugaison",
+        "nom" : "",
+        "attributs" : {
+            "Shimaoré" : [null, null],
+            "Français" : [null]
+        },
+        "identifiant" : null
+    },
+    {
+        "classe" : "verbale",
+        "enssemble" : "verbe",
+        "nom" : "f",
+        "attributs" : [{
+            "actif" : {
+                "formes" : ["fa", "fe", "fu", "fawo"],
+                "irrégularités" : []
+            }
+        }],
+        "identifiant" : null
+    },
+    {
+        "classe" : "verbale",
+        "enssemble" : "verbe",
+        "nom" : "cah",
+        "attributs" : [
+            {
+                "actif" : {
+                    "formes" : ["caha", "cahe", "cahi", "cahawo"],
+                    "irrégularités" : []
+                }
+            },
+            {
+                "applicatif" : {
+                    "formes" : ["cahiya", "cahiye",  "cahiya", "cahiyawo"],
+                    "irrégularités" : []
+                }
+            }
+        ],
+        "identifiant" : null
+    },
+    {
+        "classe" : "verbale",
+        "enssemble" : "verbe",
+        "nom" : "viŋ",
+        "attributs" : [
+            {
+                "actif" : {
+                    "formes" : ["viŋa", "viŋe", "viŋi", "viŋawo"],
+                    "irrégularités" : []
+                }
+            },
+            {
+                "applicatif" : {
+                    "formes" : ["viŋiya", "viŋiye",  "viŋiya", "viŋiyawo"],
+                    "irrégularités" : []
+                }
+            }
+        ],
+        "identifiant" : null
+    },
+    {
+        "classe" : "verbale",
+        "enssemble" : "pps",
+        "nom" : "rat2",
+        "attributs" : {
+            "p" : {
+                "1" : {"s" : "ci", "p" : "ri"},
+                "2" : {"s" : "ɦu", "p" : "mu"},
+                "3" : {"s" : "ɦa", "p" : "wa"}
+            },
+            "n" : {
+                "3" : {"s" : "ɦa", "p" : "wa"},
+                "4" : {"s" : "ɦa", "p" : "wa"},
+                "5" : {"s" : "li", "p" : "ya"},
+                "6" : {"s" : "li", "p" : "ya"},
+                "7" : {"s" : "ɦi", "p" : "zi"},
+                "8" : {"s" : "ɦi", "p" : "zi"},
+                "9" : {"s" : "vu", "p" : "vu"}
+            }
+        },
+        "identifiant" : null
+    },
+    {
+        "classe" : "verbale",
+        "enssemble" : "pps",
+        "nom" : "rnt1",
+        "attributs" : {
+            "p" : {
+                "1" : {"s" : "ci", "p" : "kari"},
+                "2" : {"s" : "ku", "p" : "kamu"},
+                "3" : {"s" : "ka", "p" : "kawa"}
+            },
+            "n" : {
+                "3" : {"s" : "ka", "p" : "kawa"},
+                "4" : {"s" : "ka", "p" : "kawa"},
+                "5" : {"s" : "kali", "p" : "kaya"},
+                "6" : {"s" : "kali", "p" : "kaya"},
+                "7" : {"s" : "kayi", "p" : "kazi"},
+                "8" : {"s" : "kayi", "p" : "kazi"},
+                "9" : {"s" : "kavu", "p" : "kavu"}
+            }
+        },
+        "identifiant" : null
+    },
+    {
+        "classe" : "verbale",
+        "enssemble" : "pps",
+        "nom" : "cat1",
+        "attributs" : {
+            "p" : {
+                "1" : {"s" : "na", "p" : "ra"},
+                "2" : {"s" : "wa", "p" : "muwa"},
+                "3" : {"s" : "ɦa", "p" : "wa"}
+            },
+            "n" : {
+                "3" : {"s" : "ɦa", "p" : "wa"},
+                "4" : {"s" : "ɦa", "p" : "wa"},
+                "5" : {"s" : "la", "p" : "ya"},
+                "6" : {"s" : "la", "p" : "ya"},
+                "7" : {"s" : "ɦa", "p" : "za"},
+                "8" : {"s" : "ɦa", "p" : "za"},
+                "9" : {"s" : "vwa", "p" : "vwa"}
+            }
+        },
+        "identifiant" : null
+    },
+    {
+        "classe" : "verbale",
+        "enssemble" : "pps",
+        "nom" : "cat2",
+        "attributs" : {
+            "p" : {
+                "1" : {"s" : "ca", "p" : "ra"},
+                "2" : {"s" : "wa", "p" : "muwa"},
+                "3" : {"s" : "ɦa", "p" : "wa"}
+            },
+            "n" : {
+                "3" : {"s" : "ɦa", "p" : "wa"},
+                "4" : {"s" : "ɦa", "p" : "wa"},
+                "5" : {"s" : "la", "p" : "ya"},
+                "6" : {"s" : "la", "p" : "ya"},
+                "7" : {"s" : "ɦa", "p" : "za"},
+                "8" : {"s" : "ɦa", "p" : "za"},
+                "9" : {"s" : "vwa", "p" : "vwa"}
+            }
+        },
+        "identifiant" : null
+    },
+    {
+        "classe" : "verbale",
+        "enssemble" : "pps",
+        "nom" : "cat3",
+        "attributs" : {
+            "p" : {
+                "1" : {"s" : "no", "p" : "ro"},
+                "2" : {"s" : "wo", "p" : "mo"},
+                "3" : {"s" : "wo", "p" : "wo"}
+            },
+            "n" : {
+                "3" : {"s" : "wo", "p" : "wo"},
+                "4" : {"s" : "wo", "p" : "wo"},
+                "5" : {"s" : "lo", "p" : "yo"},
+                "6" : {"s" : "lo", "p" : "yo"},
+                "7" : {"s" : "yo", "p" : "zo"},
+                "8" : {"s" : "yo", "p" : "zo"},
+                "9" : {"s" : "vo", "p" : "vo"}
+            }
+        },
+        "identifiant" : null
+    },
+    {
+        "classe" : "verbale",
+        "enssemble" : "pps",
+        "nom" : "cnt1",
+        "attributs" : {
+            "p" : {
+                "1" : {"s" : "ca", "p" : "kara"},
+                "2" : {"s" : "kawa", "p" : "kamuwa"},
+                "3" : {"s" : "ka", "p" : "kawa"}
+            },
+            "n" : {
+                "3" : {"s" : "ka", "p" : "kawa"},
+                "4" : {"s" : "ka", "p" : "kawa"},
+                "5" : {"s" : "kala", "p" : "kaya"},
+                "6" : {"s" : "kala", "p" : "kaya"},
+                "7" : {"s" : "kaya", "p" : "kaza"},
+                "8" : {"s" : "kaya", "p" : "kaza"},
+                "9" : {"s" : "kavwa", "p" : "kavwa"}
+            }
+        },
+        "identifiant" : null
+    },
+    {
+        "classe" : "verbale",
+        "enssemble" : "conjugaison",
+        "nom" : "Pas Par Nor Aff",
+        "attributs" : {
+            "composition" : [["pps", "rat2"], ["itc", "pas"], ["verbe", "3"]],
+            "irrégularités" : []
+        },
+        "identifiant" : null
+    },
+    {
+        "classe" : "verbale",
+        "enssemble" : "catégorie",
+        "nom" : "1",
+        "attributs" : {
+            "terminaisons" : "a",
+            "taille" : ["minimale", 2],
+            "cylabes" : ["a", 0]
+        },
+        "identifiant" : null
+    },
+    {
+        "classe" : "verbale",
+        "enssemble" : "catégorie",
+        "nom" : "2",
+        "attributs" : {
+            "terminaisons" : "a",
+            "taille" : ["éxacte", 2],
+            "cylabes" : ["e", 0]
+        },
+        "identifiant" : null
+    },
+    {
+        "classe" : "verbale",
+        "enssemble" : "catégorie",
+        "nom" : "3",
+        "attributs" : {
+            "terminaisons" : "a",
+            "taille" : ["éxacte", 2],
+            "cylabes" : ["i", 0]
+        },
+        "identifiant" : null
+    },
+    {
+        "classe" : "verbale",
+        "enssemble" : "catégorie",
+        "nom" : "4",
+        "attributs" : {
+            "terminaisons" : "a",
+            "taille" : ["éxacte", 2],
+            "cylabes" : ["o", 0]
+        },
+        "identifiant" : null
+    },
+    {
+        "classe" : "verbale",
+        "enssemble" : "catégorie",
+        "nom" : "5",
+        "attributs" : {
+            "terminaisons" : "a",
+            "taille" : ["éxacte", 2],
+            "cylabes" : ["u", 0]
+        },
+        "identifiant" : null
+    },
+    {
+        "classe" : "verbale",
+        "enssemble" : "catégorie",
+        "nom" : "6",
+        "attributs" : {
+            "terminaisons" : "e",
+            "taille" : [],
+            "cylabes" : []
+        },
+        "identifiant" : null
+    },
+    {
+        "classe" : "verbale",
+        "enssemble" : "catégorie",
+        "nom" : "7",
+        "attributs" : {
+            "terminaisons" : "i",
+            "taille" : [],
+            "cylabes" : []
+        },
+        "identifiant" : null
+    },
+    {
+        "classe" : "verbale",
+        "enssemble" : "catégorie",
+        "nom" : "8",
+        "attributs" : {
+            "terminaisons" : "u",
+            "taille" : [],
+            "cylabes" : []
+        },
+        "identifiant" : null
+    },
+    {
+        "classe" : "verbale",
+        "enssemble" : "conjugaison",
+        "nom" : "Pre Par Nor Neg",
+        "attributs" : {
+            "composition" : [["pps", "rnt1"], ["itc", "pre"], ["verbe", "1"]],
+            "irrégularités" : []
+        },
+        "identifiant" : null
+    },
+    {
+        "classe" : "verbale",
+        "enssemble" : "conjugaison",
+        "nom" : "Fut Par Nor Neg",
+        "attributs" : {
+            "composition" : [["pps", "rnt1"], ["itc", "fut"], ["verbe", "1"]],
+            "irrégularités" : []
+        },
+        "identifiant" : null
+    },
+    {
+        "classe" : "verbale",
+        "enssemble" : "verbe",
+        "nom" : "xinr",
+        "attributs" : [
+            {
+                "actif" : {
+                    "formes" : ["xinra", "xinre", "xinri", "xinrawo"],
+                    "irrégularités" : []
+                }
+            },
+            {
+                "passif" : {
+                    "formes" : ["xinriwa", "xinriwe",  "xinriwa", "xinriwawo"],
+                    "irrégularités" : []
+                }
+            }
+        ],
+        "identifiant" : null
+    },
+    {
+        "classe" : "verbale",
+        "enssemble" : "dérvation",
+        "nom" : "passif",
+        "attributs" : {
+            "composition" : [["wa"]]
+        },
+        "identifiant" : null
+    },
+    {
+        "classe" : "verbale",
+        "enssemble" : "ppo",
+        "nom" : "",
+        "attributs" : {
+            "p" : {
+                "1" : {"s" : "ni", "p" : "ri"},
+                "2" : {"s" : "hu", "p" : "mu"},
+                "3" : {"s" : "mu", "p" : "wa"}
+            },
+            "n" : {
+                "3" : {"s" : "mu", "p" : "wa"},
+                "4" : {"s" : "mu", "p" : "wa"},
+                "5" : {"s" : "li", "p" : "yi"},
+                "6" : {"s" : "li", "p" : "yi"},
+                "7" : {"s" : "yi", "p" : "zi"},
+                "8" : {"s" : "yi", "p" : "zi"},
+                "9" : {"s" : "vwa", "p" : "vwa"}
+            }
+        },
+        "identifiant" : null
+    },
+    {
+        "classe" : "verbale",
+        "enssemble" : "verbe",
+        "nom" : "ɗuŋ",
+        "attributs" : [
+            {
+                "actif" : {
+                    "formes" : ["ɗuŋa", "ɗuŋe", "ɗuŋu", "ɗuŋawo"],
+                    "irrégularités" : []
+                }
+            },
+            {
+                "passif" : {
+                    "formes" : ["ɗuŋwa", "ɗuŋwe",  "ɗuŋwa", "ɗuŋwawo"],
+                    "irrégularités" : []
+                }
+            }
+        ],
+        "identifiant" : null
+    },
+    {
+        "classe" : "verbale",
+        "enssemble" : "conjugaison",
+        "nom" : "Imp Par Nor Aff",
+        "attributs" : {
+            "composition" : [["itc", "imp"], ["pps", "rat1"], ["verbe", "2"]],
+            "irrégularités" : [
+                {
+                    "personne" : "p2,s",
+                    "composition" : [["verbe", "1"]]
+                },
+                {
+                    "personne" : "p3,s",
+                    "composition" : [["itc", "imp"], ["verbe", "2"]]
+                }
+            ]
+        },
+        "identifiant" : null
+    },
+    {   
+        "classe" : "verbale",
+        "enssemble" : "itc",
+        "nom" : "imp",
+        "attributs" : {
+            "composition" : "na"
+        },
+        "identifiant" : null
+    },
+    {
+        "classe" : "verbale",
+        "enssemble" : "conjugaison",
+        "nom" : "Imp Par Nor Neg",
+        "attributs" : {
+            "composition" : [["pps", "rnt1"], ["itc", "pre"], ["verbe", "2"]],
+            "irrégularités" : []
+        },
+        "identifiant" : null
+    },
+    {
+        "classe" : "verbale",
+        "enssemble" : "verbe",
+        "nom" : "venʣ",
+        "attributs" : [
+            {
+                "actif" : {
+                    "formes" : ["venʣa", "venʣe", "venʣe", "venʣawo"],
+                    "irrégularités" : []
+                }
+            },
+            {
+                "passif" : {
+                    "formes" : ["venʣwa", "venʣwe",  "venʣwa", "venʣwawo"],
+                    "irrégularités" : []
+                }
+            },
+            {
+                "réciproque" : {
+                    "formes" : ["venʣana", "venʣane",  "venʣana", "venʣanawo"],
+                    "irrégularités" : []
+                }
+            }
+        ],
+        "identifiant" : null
+    }
+];
+
+    function rechercherPPS(combinant, sujet) {
+        for (const mot of mots) {
+            if (mot.enssemble === combinant[0] && mot.nom === combinant[1]) {
+                return mot.attributs [sujet [0] [0]] [sujet [0] [1]] [sujet [1]];
+            }
+        }
+    }
+
+    function rechercherPPO(objet) {
+        for (const mot of mots) {
+            if (mot.enssemble === "ppo") {
+                return mot.attributs [objet [0] [0]] [objet [0] [1]] [objet [1]];
+            }
+        }
+    }
+
+    function rechercherITC(combinant) {
+        for (const mot of mots) {
+            if (mot.enssemble === combinant[0] && mot.nom === combinant[1]) {
+                return mot.attributs.composition;
+            }
+        }
+    }
+
+    function rechercherVerbe(radical, derivation) {
+        for (const mot of mots) {
+            if (mot.enssemble === "verbe" && mot.nom === radical) {
+                const mo = mot.attributs;
+                for (const m of mo) {
+                    if (derivation in m) {
+                        return m[derivation];
+                    }
+                }
+            }
+        }
+    }
+   
+    function rechercherFormeV(verbe, forme) {
+        return verbe.formes[parseInt(forme) - 1];
+    }
+
+    function conjuguer(radical, conjugaison, sujet, objet, derivation) {
+        let resultat = [];
+        let conju = null;
+        let verbe = rechercherVerbe(radical, derivation);
+
+        for (const mot of mots) {
+            if (
+                mot.enssemble === "conjugaison" &&
+                mot.nom === conjugaison &&
+                "attributs" in mot
+            ) {
+                conju = mot.attributs;
+                break;
+            }
+        }
+
+        if (!conju) return ["Erreur : conjugaison non trouvée."];
+
+        if (conju.irrégularités.length > 0) {
+            for (const personne of conju.irrégularités) {
+                if (personne.personne === document.getElementById("sujet").value) {
+                    conju = personne;
+                    break;
+                }
+            }
+        }
+
+        if (!verbe) return ["Erreur : verbe non trouvée."];
+
+        if (verbe && "irrégularités" in verbe && conjugaison in verbe.irrégularités) {
+            conju = verbe.irrégularités[conjugaison];
+        }
+        for (const ele of verbe.irrégularités) {
+    		if (ele["nom"] === conjugaison) {
+            	conju = ele
+            	if (ele.formes != []) {
+            		verbe = ele
+            	}
+        	}
+        }
+        for (const terme of conju.composition) {
+            if (terme[0] === "pps") {
+                resultat.push(rechercherPPS(terme, sujet));
+            } else if (terme[0] === "itc") {
+                resultat.push(rechercherITC(terme));
+            } else if (terme[0] === "verbe") {
+                if (objet.length > 1) {
+                    resultat.push(rechercherPPO(objet));
+                }
+                if (document.getElementById("objet").value && conjugaison === "Imp Par Nor Aff") {
+                    resultat.push(rechercherFormeV(verbe, "2"));
+                }
+                else if (document.getElementById("objet").value === "p2,p") {
+                    resultat.push(rechercherFormeV(verbe, terme[1]) + "ni");
+                }
+                else {
+                    resultat.push(rechercherFormeV(verbe, terme[1]));
+                }
+            }
+        }
+
+        return resultat;
+    }
+
+    function executer() {
+        const radical = document.getElementById("radical").value.trim();
+        const conjugaison = document.getElementById("conjugaison").value.trim();
+        const sujetStr = document.getElementById("sujet").value.trim();
+        const objetStr = document.getElementById("objet").value.trim();
+        const derivation = document.getElementById("derivation").value.trim();
+
+        const sujet = sujetStr.split(",").map(s => s.trim());
+        const objet = objetStr.split(",").map(t => t.trim());
+
+        localStorage.setItem('log',
+            `
+                ${localStorage.getItem('log')} <br><u>
+                ${new Date().getDate()}
+                ${new Date().getMonth()}
+                ${new Date().getFullYear()}
+                ${new Date().getHours()}:${new Date().getMinutes()}:${new Date().getSeconds()}</u> :
+                Conjugaison effectuée pour le verbe de radical <b>${radical}</b> par <i>conju_auto_0.2.3.html</i>
+            `
+        );
+
+        const resultat = conjuguer(radical, conjugaison, sujet, objet, derivation);
+
+        document.getElementById("resultat").innerText = "Résultat : [ " + resultat.join(" ") + " ]";
+    }
+	// Générer dynamiquement les suggestions à partir des données `mots`
+	window.addEventListener("DOMContentLoaded", () => {
+	   
+	    const radicauxList = document.getElementById("radicaux");
+	    const conjugList = document.getElementById("conjugaisons");
+	    const sujetList = document.getElementById("sujets");
+        const objetList = document.getElementById("objets");
+	    const derivList = document.getElementById("derivations");
+
+	    const radicaux = new Set();
+	    const conjugaisons = new Set();
+	    const sujets = new Set();
+        const objets = new Set();
+	    const derivations = new Set();
+
+	    mots.forEach(mot => {
+	        if (mot.enssemble === "verbe") {
+	            radicaux.add(mot.nom);
+	            if (Array.isArray(mot.attributs)) {
+	                mot.attributs.forEach(attr => {
+	                    for (let deriv in attr) {
+	                        derivations.add(deriv);
+	                    }
+	                });
+	            }
+	        }
+	        if (mot.enssemble === "conjugaison") {
+	            conjugaisons.add(mot.nom);
+	        }
+			if (mot.enssemble === "pps") {
+			    for (let classe in mot.attributs) {
+			        for (let personne in mot.attributs[classe]) {
+			            let genres = Object.keys(mot.attributs[classe][personne]);
+			            genres.forEach(genre => {
+			                sujets.add(`${classe}${personne},${genre}`);
+			            });
+			        }
+			    }
+			}
+            if (mot.enssemble === "ppo") {
+                for (let classe in mot.attributs) {
+                    for (let personne in mot.attributs[classe]) {
+                        let genres = Object.keys(mot.attributs[classe][personne]);
+                        genres.forEach(genre => {
+                            objets.add(`${classe}${personne},${genre}`);
+                        });
+                    }
+                }
+            }
+	    });
+
+	    function populateDatalist(datalistElement, values) {
+	        datalistElement.innerHTML = "";
+	        Array.from(values).sort().forEach(value => {
+	            const opt = document.createElement("option");
+	            opt.value = value;
+	            datalistElement.appendChild(opt);
+	        });
+	    }
+
+	    populateDatalist(radicauxList, radicaux);
+	    populateDatalist(conjugList, conjugaisons);
+	    populateDatalist(sujetList, sujets);
+        populateDatalist(objetList, objets);
+	    populateDatalist(derivList, derivations);
+	});
+    </script>
+</body>
+</html>
